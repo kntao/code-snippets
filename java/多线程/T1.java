@@ -1,1 +1,99 @@
-package com.feinno.secondfriend.query.secondWay;import java.io.BufferedReader;import java.io.FileInputStream;import java.io.FileNotFoundException;import java.io.IOException;import java.io.InputStreamReader;import java.io.UnsupportedEncodingException;import java.util.Arrays;import java.util.List;import java.util.concurrent.LinkedBlockingQueue;import org.apache.hadoop.io.IOUtils;/* * ´¦ÀíÔ­Êý¾Ý·ÅÈë¶ÓÀïÖÐ * @author kongqingtao * Ïß³ÌT1 */public class HandleRawDataThread extends Thread{	private LinkedBlockingQueue<String> rawDataQueue; // ¶ÓÁÐQ1		public HandleRawDataThread(LinkedBlockingQueue<String> lbQueue){		if(lbQueue == null)			lbQueue = new LinkedBlockingQueue<String>();		this.rawDataQueue = lbQueue;	}	public void run(){		String rawDataPath = null;		String rawFileExt = null;		String rawFileExtAfterRead = null;		List<String> fileLists = null;		rawDataPath = Factory.getSystemPropertiesValue("rawDataPath");		rawFileExt = Factory.getSystemPropertiesValue("fileExtention");		rawFileExtAfterRead = Factory.getSystemPropertiesValue("rawFileExtentionAfterRead");		while(true){			fileLists = FileOperation.listAllFiles(rawDataPath, rawFileExt);						for(String path : fileLists){				BufferedReader in = null;				try				{				    in = new BufferedReader(new InputStreamReader				    		(new FileInputStream(path),"UTF-8"));					String line;					while ((line = in.readLine()) != null) // °´ÐÐ¶ÁÈë					{						if(null != line && line.length() != 0){							String[] uids = line.split(",");							rawDataQueue.addAll(Arrays.asList(uids)); // °Ñ¶ÁÈ¡½á¹û·Åµ½Q1ÖÐ							System.out.printf("¶ÁÈëÔ­Ê¼Êý¾Ý%s¸öÊý%s\n", line,rawDataQueue.size());						}					}					in.close();					// ÖØÃüÃû					String desPath = path.substring(0,path.lastIndexOf(rawFileExt))+ rawFileExtAfterRead;					FileOperation.RenameFile(path, desPath);				}				catch (UnsupportedEncodingException e)				{					// TODO Auto-generated catch block					e.printStackTrace();				}				catch (FileNotFoundException e)				{					// TODO Auto-generated catch block					e.printStackTrace();				}				catch (IOException e)				{					// TODO Auto-generated catch block					e.printStackTrace();				}				finally{						IOUtils.closeStream(in);				}			}			// Çå³ýfileLists			fileLists.clear();			try			{				Thread.sleep(1*1000);			}			catch (InterruptedException e)			{				// TODO Auto-generated catch block				e.printStackTrace();			}		}	}		public static void main(String[] args)	{		LinkedBlockingQueue<String> rawDataQueue = null;		Thread t = new Thread(new HandleRawDataThread(rawDataQueue));		t.start();	}}
+package com.xxx.xxx.query;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.hadoop.io.IOUtils;
+
+/*
+ * ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @author kongqingtao
+ * ï¿½ß³ï¿½T1
+ */
+public class HandleRawDataThread extends Thread
+{
+	private LinkedBlockingQueue<String> rawDataQueue; // ï¿½ï¿½ï¿½ï¿½Q1
+	
+	public HandleRawDataThread(LinkedBlockingQueue<String> lbQueue){
+		if(lbQueue == null)
+			lbQueue = new LinkedBlockingQueue<String>();
+		this.rawDataQueue = lbQueue;
+	}
+	public void run(){
+		String rawDataPath = null;
+		String rawFileExt = null;
+		String rawFileExtAfterRead = null;
+		List<String> fileLists = null;
+		rawDataPath = Factory.getSystemPropertiesValue("rawDataPath");
+		rawFileExt = Factory.getSystemPropertiesValue("fileExtention");
+		rawFileExtAfterRead = Factory.getSystemPropertiesValue("rawFileExtentionAfterRead");
+		while(true){
+			fileLists = FileOperation.listAllFiles(rawDataPath, rawFileExt);
+			
+			for(String path : fileLists){
+				BufferedReader in = null;
+				try
+				{
+				    in = new BufferedReader(new InputStreamReader
+				    		(new FileInputStream(path),"UTF-8"));
+					String line;
+					while ((line = in.readLine()) != null) // ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
+					{
+						if(null != line && line.length() != 0){
+							String[] uids = line.split(",");
+							rawDataQueue.addAll(Arrays.asList(uids)); // ï¿½Ñ¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Q1ï¿½ï¿½
+							System.out.printf("ï¿½ï¿½ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½%sï¿½ï¿½ï¿½ï¿½%s\n", line,rawDataQueue.size());
+						}
+					}
+					in.close();
+					// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					String desPath = path.substring(0,path.lastIndexOf(rawFileExt))+ rawFileExtAfterRead;
+					FileOperation.RenameFile(path, desPath);
+				}
+				catch (UnsupportedEncodingException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (FileNotFoundException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				finally{	
+					IOUtils.closeStream(in);
+				}
+			}
+			// ï¿½ï¿½ï¿½ï¿½fileLists
+			fileLists.clear();
+			try
+			{
+				Thread.sleep(1*1000);
+			}
+			catch (InterruptedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		LinkedBlockingQueue<String> rawDataQueue = null;
+		Thread t = new Thread(new HandleRawDataThread(rawDataQueue));
+		t.start();
+	}
+}
